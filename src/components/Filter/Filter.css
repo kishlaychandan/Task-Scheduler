@@ -45,32 +45,60 @@
     align-items: center;
     /* justify-content: center; */
 }
-.form{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    position: relative;
+.form {
+    border: 1px solid #ccc;
     padding: 1rem;
-    background-color: rgb(215, 214, 214);
-    color: black;
-    font-size: 1.5rem;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    /* max-width: 500px; */
+    width: 40%;
+    margin:2rem auto;
+  }
+  
+  @media screen and (max-width: 1700px) {
+    .form {
+      width: 70%;
+    }
+  }
+  
+  @media screen and (max-width: 700px) {
+    .form {
+      width: 90%;
+    }
+  }
+  .form label {
+    display: block;
+    margin-bottom: 1rem;
+  }
+  
+  .form input {
+    display: block;
     width: 100%;
-}
-label{
-    display: flex;
-    min-width: 30rem;
-    justify-content: space-between;
-}
-.form button{
-    padding: 0.8rem;
-    border-radius: 0.8rem;
-    border: 1px solid black;
-    font-size: 1.3rem;
-}
-.form .close{
-    position: absolute;
-    right: 1rem;
-    top: 1rem;
-    font-size: 1.5rem;
-}
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  .submit, .close {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .submit {
+    background-color: #28a745;
+  }
+  
+  .close {
+    background-color: #dc3545;
+  }
+  
+  .submit:hover {
+    background-color: #218838;
+  }
+  
+  .close:hover {
+    background-color: #c82333;
+  }
