@@ -133,9 +133,6 @@ The base URL for all API endpoints is:
      - Success (204 No Content): Task is deleted successfully.
      - Error (404 Not Found): Returns an error message if the task is not found.
 
-**Note:** Replace `http://your-api-url.com` with the actual URL where your API is hosted. Once you create formal API documentation, you can update this section with a link to that documentation.
-
-
 
 **Links:**
 
