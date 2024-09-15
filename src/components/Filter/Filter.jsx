@@ -14,6 +14,7 @@ function Filter() {
     month: '*',
     dayOfWeek: '*',
     expiry: '',
+    message: '',
   }); // State to hold form data
 
   // Function to handle form data change
@@ -25,36 +26,45 @@ function Filter() {
     }));
   };
 
-  // Function to handle task creation
+  // Function to handle task creation and sending data to backend
   async function create() {
     const cronExpression = `${taskData.minute} ${taskData.hour} ${taskData.dayOfMonth} ${taskData.month} ${taskData.dayOfWeek}`;
-
-    const res = await fetch('http://localhost:3000/tasks', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        name: taskData.name,
-        email: taskData.email,
-        schedule: cronExpression, // Cron expression created from form input
-        expiry: taskData.expiry, // Expiry timestamp
-      }),
-    });
-
-    if (res.ok) {
-      // Reset the form data and close the form after submission
-      setTaskData({
-        name: '',
-        email: '',
-        minute: '*',
-        hour: '*',
-        dayOfMonth: '*',
-        month: '*',
-        dayOfWeek: '*',
-        expiry: '',
+    
+    try {
+      const res = await fetch('http://localhost:3000/tasks', {  // Replace with your backend URL
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: taskData.name,
+          email: taskData.email,
+          schedule: cronExpression, // Cron expression created from form input
+          expiry: taskData.expiry, // Expiry timestamp
+          message: taskData.message,
+        }),
       });
-      setShowForm(false); // Close form after submission
+
+      if (res.ok) {
+        alert('Task created successfully!');
+        // Reset the form data and close the form after submission
+        setTaskData({
+          name: '',
+          email: '',
+          minute: '*',
+          hour: '*',
+          dayOfMonth: '*',
+          month: '*',
+          dayOfWeek: '*',
+          expiry: '',
+          message: '',
+        });
+        setShowForm(false); // Close form after submission
+      } else {
+        alert('Error creating task');
+      }
+    } catch (error) {
+      alert('Error: ' + error.message);
     }
   }
 
@@ -106,57 +116,84 @@ function Filter() {
 
           <label>
             Minute (0-59):
-            <input
-              type="text"
+            <select
               name="minute"
-              placeholder="*"
               value={taskData.minute}
               onChange={handleInputChange}
-            />
+            >
+              <option value="*">Every minute (*)</option>
+              {[...Array(60).keys()].map((min) => (
+                <option key={min} value={min}>
+                  {min}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label>
             Hour (0-23):
-            <input
-              type="text"
+            <select
               name="hour"
-              placeholder="*"
               value={taskData.hour}
               onChange={handleInputChange}
-            />
+            >
+              <option value="*">Every hour (*)</option>
+              {[...Array(24).keys()].map((hr) => (
+                <option key={hr} value={hr}>
+                  {hr}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label>
             Day of Month (1-31):
-            <input
-              type="text"
+            <select
               name="dayOfMonth"
-              placeholder="*"
               value={taskData.dayOfMonth}
               onChange={handleInputChange}
-            />
+            >
+              <option value="*">Every day (*)</option>
+              {[...Array(31).keys()].map((day) => (
+                <option key={day} value={day + 1}>
+                  {day + 1}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label>
             Month (1-12):
-            <input
-              type="text"
+            <select
               name="month"
-              placeholder="*"
               value={taskData.month}
               onChange={handleInputChange}
-            />
+            >
+              <option value="*">Every month (*)</option>
+              {[...Array(12).keys()].map((mon) => (
+                <option key={mon} value={mon + 1}>
+                  {mon + 1}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label>
             Day of Week (0-6, Sun-Sat):
-            <input
-              type="text"
+            <select
               name="dayOfWeek"
-              placeholder="*"
               value={taskData.dayOfWeek}
               onChange={handleInputChange}
-            />
+            >
+              <option value="*">Every day (*)</option>
+              <option value="0">Sunday</option>
+              <option value="1">Monday</option>
+              <option value="2">Tuesday</option>
+              <option value="3">Wednesday</option>
+              <option value="4">Thursday</option>
+              <option value="5">Friday</option>
+              <option value="6">Saturday</option>
+            </select>
           </label>
 
           <label>
@@ -165,6 +202,17 @@ function Filter() {
               type="datetime-local"
               name="expiry"
               value={taskData.expiry}
+              onChange={handleInputChange}
+            />
+          </label>
+
+          <label>
+            Message:
+            <input
+              type="text"
+              name="message"
+              placeholder="Message"
+              value={taskData.message}
               onChange={handleInputChange}
             />
           </label>
