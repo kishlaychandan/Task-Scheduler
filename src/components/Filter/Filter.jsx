@@ -5,6 +5,7 @@ import { IoFilterSharp } from 'react-icons/io5';
 
 function Filter() {
   const [showForm, setShowForm] = useState(false); // State to toggle form visibility
+  const [selectedSchedule, setSelectedSchedule] = useState('minute'); // State to track selected schedule type
   const [taskData, setTaskData] = useState({
     name: '',
     email: '',
@@ -28,8 +29,28 @@ function Filter() {
 
   // Function to handle task creation and sending data to backend
   async function create() {
-    const cronExpression = `${taskData.minute} ${taskData.hour} ${taskData.dayOfMonth} ${taskData.month} ${taskData.dayOfWeek}`;
-    
+    let cronExpression = '';
+
+    // Create the cron expression based on the selected schedule type
+    if (selectedSchedule === 'minute') {
+      cronExpression = `${taskData.minute}`;
+    } else if (selectedSchedule === 'hour') {
+      cronExpression = `${taskData.minute} ${taskData.hour}`;
+    } else if (selectedSchedule === 'dayOfMonth') {
+      cronExpression = `${taskData.minute} ${taskData.hour} ${taskData.dayOfMonth}`;
+    } else if (selectedSchedule === 'specificDate') {
+      cronExpression = `${taskData.minute} ${taskData.hour} ${taskData.dayOfMonth} ${taskData.month}`;
+    }
+
+    // Console log the task data before submitting
+    console.log({
+      name: taskData.name,
+      email: taskData.email,
+      schedule: cronExpression,
+      expiry: taskData.expiry,
+      message: taskData.message,
+    });
+
     try {
       const res = await fetch('http://localhost:3000/tasks', {  // Replace with your backend URL
         method: 'POST',
@@ -114,87 +135,184 @@ function Filter() {
             />
           </label>
 
+          {/* Dropdown or radio button to select schedule type */}
           <label>
-            Minute (0-59):
-            <select
-              name="minute"
-              value={taskData.minute}
-              onChange={handleInputChange}
-            >
-              <option value="*">Every minute (*)</option>
-              {[...Array(60).keys()].map((min) => (
-                <option key={min} value={min}>
-                  {min}
-                </option>
-              ))}
+            Schedule Type:
+            <select value={selectedSchedule} onChange={(e) => setSelectedSchedule(e.target.value)}>
+              <option value="minute">Every {`minute`}</option>
+              <option value="hour">Every day at {`hour:minute`}</option>
+              <option value="dayOfMonth">On {`date`} of the month at {`hour:minute`}</option>
+              <option value="specificDate">On {`date`} {`month`} at {`hour:minute`}</option>
             </select>
           </label>
 
-          <label>
-            Hour (0-23):
-            <select
-              name="hour"
-              value={taskData.hour}
-              onChange={handleInputChange}
-            >
-              <option value="*">Every hour (*)</option>
-              {[...Array(24).keys()].map((hr) => (
-                <option key={hr} value={hr}>
-                  {hr}
-                </option>
-              ))}
-            </select>
-          </label>
+          {/* Show inputs based on selected schedule type */}
+          {selectedSchedule === 'minute' && (
+            <>
+              <label>
+                Minute (0-59):
+                <select
+                  name="minute"
+                  value={taskData.minute}
+                  onChange={handleInputChange}
+                >
+                  <option value="*">Every minute (*)</option>
+                  {[...Array(60).keys()].map((min) => (
+                    <option key={min} value={min}>
+                      {min}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </>
+          )}
 
-          <label>
-            Day of Month (1-31):
-            <select
-              name="dayOfMonth"
-              value={taskData.dayOfMonth}
-              onChange={handleInputChange}
-            >
-              <option value="*">Every day (*)</option>
-              {[...Array(31).keys()].map((day) => (
-                <option key={day} value={day + 1}>
-                  {day + 1}
-                </option>
-              ))}
-            </select>
-          </label>
+          {selectedSchedule === 'hour' && (
+            <>
+              <label>
+                Hour (0-23):
+                <select
+                  name="hour"
+                  value={taskData.hour}
+                  onChange={handleInputChange}
+                >
+                  {[...Array(24).keys()].map((hr) => (
+                    <option key={hr} value={hr}>
+                      {hr}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-          <label>
-            Month (1-12):
-            <select
-              name="month"
-              value={taskData.month}
-              onChange={handleInputChange}
-            >
-              <option value="*">Every month (*)</option>
-              {[...Array(12).keys()].map((mon) => (
-                <option key={mon} value={mon + 1}>
-                  {mon + 1}
-                </option>
-              ))}
-            </select>
-          </label>
+              <label>
+                Minute (0-59):
+                <select
+                  name="minute"
+                  value={taskData.minute}
+                  onChange={handleInputChange}
+                >
+                  {[...Array(60).keys()].map((min) => (
+                    <option key={min} value={min}>
+                      {min}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </>
+          )}
 
-          <label>
-            Day of Week (0-6, Sun-Sat):
-            <select
-              name="dayOfWeek"
-              value={taskData.dayOfWeek}
-              onChange={handleInputChange}
-            >
-              <option value="*">Every day (*)</option>
-              <option value="0">Sunday</option>
-              <option value="1">Monday</option>
-              <option value="2">Tuesday</option>
-              <option value="3">Wednesday</option>
-              <option value="4">Thursday</option>
-              <option value="5">Friday</option>
-              <option value="6">Saturday</option>
-            </select>
-          </label>
+          {selectedSchedule === 'dayOfMonth' && (
+            <>
+              <label>
+                Day of Month (1-31):
+                <select
+                  name="dayOfMonth"
+                  value={taskData.dayOfMonth}
+                  onChange={handleInputChange}
+                >
+                  {[...Array(31).keys()].map((day) => (
+                    <option key={day} value={day + 1}>
+                      {day + 1}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label>
+                Hour (0-23):
+                <select
+                  name="hour"
+                  value={taskData.hour}
+                  onChange={handleInputChange}
+                >
+                  {[...Array(24).keys()].map((hr) => (
+                    <option key={hr} value={hr}>
+                      {hr}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label>
+                Minute (0-59):
+                <select
+                  name="minute"
+                  value={taskData.minute}
+                  onChange={handleInputChange}
+                >
+                  {[...Array(60).keys()].map((min) => (
+                    <option key={min} value={min}>
+                      {min}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </>
+          )}
+
+          {selectedSchedule === 'specificDate' && (
+            <>
+              <label>
+                Day of Month (1-31):
+                <select
+                  name="dayOfMonth"
+                  value={taskData.dayOfMonth}
+                  onChange={handleInputChange}
+                >
+                  {[...Array(31).keys()].map((day) => (
+                    <option key={day} value={day + 1}>
+                      {day + 1}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label>
+                Month (1-12):
+                <select
+                  name="month"
+                  value={taskData.month}
+                  onChange={handleInputChange}
+                >
+                  {[...Array(12).keys()].map((mon) => (
+                    <option key={mon} value={mon + 1}>
+                      {mon + 1}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label>
+                Hour (0-23):
+                <select
+                  name="hour"
+                  value={taskData.hour}
+                  onChange={handleInputChange}
+                >
+                  {[...Array(24).keys()].map((hr) => (
+                    <option key={hr} value={hr}>
+                      {hr}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label>
+                Minute (0-59):
+                <select
+                  name="minute"
+                  value={taskData.minute}
+                  onChange={handleInputChange}
+                >
+                  {[...Array(60).keys()].map((min) => (
+                    <option key={min} value={min}>
+                      {min}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </>
+          )}
 
           <label>
             Expiry:
@@ -208,10 +326,9 @@ function Filter() {
 
           <label>
             Message:
-            <input
-              type="text"
+            <textarea
               name="message"
-              placeholder="Message"
+              placeholder="Task Message"
               value={taskData.message}
               onChange={handleInputChange}
             />
